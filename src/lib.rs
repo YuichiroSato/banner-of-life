@@ -3,9 +3,10 @@ extern crate rand;
 extern crate wasm_bindgen;
 extern crate web_sys;
 
+mod cells;
+mod fonts;
 mod game_of_life;
 mod utils;
-mod cells;
 
 use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::*;
