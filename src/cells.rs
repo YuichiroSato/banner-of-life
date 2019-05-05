@@ -20,8 +20,8 @@ pub struct CellsImpl {
     cells: Vec<Vec<i32>>,
 }
 
-impl Cells for CellsImpl {
-    fn new(size_x: usize, size_y: usize) -> Self {
+impl CellsImpl {
+    pub fn new(size_x: usize, size_y: usize) -> Self {
         CellsImpl {
             size_x: size_x,
             size_y: size_y,
@@ -29,7 +29,7 @@ impl Cells for CellsImpl {
         }
     }
 
-    fn replicate(&self) -> Self {
+    pub fn replicate(&self) -> Self {
         CellsImpl {
             size_x: self.size_x,
             size_y: self.size_y,
@@ -37,25 +37,25 @@ impl Cells for CellsImpl {
         }
     }
 
-    fn make_alive(&mut self, x: usize, y: usize) {
+    pub fn make_alive(&mut self, x: usize, y: usize) {
         let cx = self.cell_x(x as i32);
         let cy = self.cell_y(y as i32);
         self.cells[cx][cy] = 1;
     }
 
-    fn make_dead(&mut self, x: usize, y: usize) {
+    pub fn make_dead(&mut self, x: usize, y: usize) {
         let cx = self.cell_x(x as i32);
         let cy = self.cell_y(y as i32);
         self.cells[cx][cy] = 0;
     }
 
-    fn is_alive(&self, x: usize, y: usize) -> bool {
+    pub fn is_alive(&self, x: usize, y: usize) -> bool {
         let cx = self.cell_x(x as i32);
         let cy = self.cell_y(y as i32);
         self.cells[cx][cy] == 1
     }
 
-    fn count_alive_around(&self, x: usize, y: usize) -> i32 {
+    pub fn count_alive_around(&self, x: usize, y: usize) -> i32 {
         let left = self.cell_x(x as i32 - 1);
         let right = self.cell_x(x as i32 + 1);
         let upper = self.cell_y(y as i32 - 1);
