@@ -6,6 +6,7 @@ extern crate web_sys;
 mod cells;
 mod fonts;
 mod game_of_life;
+mod mold;
 mod primes;
 mod utils;
 
