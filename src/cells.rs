@@ -1,3 +1,10 @@
+#[repr(u8)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Cell {
+    Dead = 0,
+    Alive = 1,
+}
+
 pub trait Cells {
     fn new(size_x: usize, size_y: usize) -> Self;
     fn replicate(&self) -> Self;
