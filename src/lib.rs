@@ -4,6 +4,7 @@ extern crate wasm_bindgen;
 extern crate web_sys;
 
 mod cells;
+mod compound;
 mod fonts;
 mod game_of_life;
 mod mold;
