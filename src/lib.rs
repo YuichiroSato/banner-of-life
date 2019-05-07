@@ -8,6 +8,7 @@ mod fonts;
 mod game_of_life;
 mod mold;
 mod primes;
+mod randomizer;
 mod utils;
 
 use wasm_bindgen::JsCast;
