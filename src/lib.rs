@@ -8,6 +8,7 @@ mod compound;
 mod fonts;
 mod game_of_life;
 mod mold;
+mod optimizer;
 mod primes;
 mod randomizer;
 mod utils;
