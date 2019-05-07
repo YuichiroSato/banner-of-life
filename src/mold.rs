@@ -2,6 +2,7 @@ use cells::*;
 use fonts::*;
 
 pub struct Mold {
+    pub font_size: usize,
     pub target: Cells,
 }
 
@@ -11,11 +12,12 @@ impl Mold {
         let mut cells = Cells::new(font_size, font_size);
         cells.allocate(Cells::from_font(font), 0, 0, mold_scale);
         Mold {
+            font_size: font_size,
             target: cells,
         }
     }
 
-    pub fn intersect(&self, cells: Cells) -> u64 {
+    pub fn intersect(&self, cells: &Cells) -> u64 {
         let mut count = 0;
 
         for x in 0..self.target.size_x {
@@ -29,7 +31,7 @@ impl Mold {
         count
     }
 
-    pub fn difference(&self, cells: Cells) -> u64 {
+    pub fn difference(&self, cells: &Cells) -> u64 {
         let mut count = 0;
 
         for x in 0..self.target.size_x {
@@ -79,7 +81,7 @@ fn test_intersect() {
     let mut cells = Cells::new(20, 20);
     cells.allocate(Cells::from_font(test_font2), 0, 0, 2.0);
 
-    assert_eq!(20, mold.intersect(cells));
+    assert_eq!(20, mold.intersect(&cells));
 }
 
 #[test]
@@ -117,5 +119,5 @@ fn test_difference() {
     let mut cells = Cells::new(20, 20);
     cells.allocate(Cells::from_font(test_font2), 0, 0, 2.0);
 
-    assert_eq!(24, mold.difference(cells));
+    assert_eq!(24, mold.difference(&cells));
 }

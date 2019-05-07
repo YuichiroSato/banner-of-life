@@ -1,4 +1,5 @@
 use fonts::*;
+use primes::*;
 
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -82,6 +83,14 @@ impl Cells {
         self.cells[cx][cy] = Cell::Alive;
     }
 
+    pub fn make_alive_square(&mut self, x: usize, y: usize, size: usize) {
+        for _x in x..(x + size) {
+            for _y in y..(y + size) {
+                self.make_alive(_x, _y);
+            }
+        }
+    }
+
     pub fn make_dead(&mut self, x: usize, y: usize) {
         let cx = self.cell_x(x as i64);
         let cy = self.cell_y(y as i64);
@@ -94,6 +103,26 @@ impl Cells {
         self.cells[cx][cy] == Cell::Alive
     }
 
+    pub fn clear(&mut self) {
+        for x in 0..self.size_x {
+            for y in 0..self.size_y {
+                self.make_dead(x, y);
+            }
+        }
+    }
+
+    pub fn is_allocatable(&self, x: usize, y: usize, size: usize) -> bool {
+        let mut able = true;
+
+        for _x in x..(x + size) {
+            for _y in y..(y + size) {
+                able &= !self.is_alive(_x, _y);
+            }
+        }
+
+        able
+    }
+
     pub fn allocate(&mut self, cells: Cells, x: usize, y: usize, scale: f64) {
         let scaled_x = cells.size_x * scale as usize;
         let scaled_y = cells.size_y * scale as usize;
@@ -102,6 +131,18 @@ impl Cells {
                 let fx = (x2 as f64 / scale) as usize;
                 let fy = (y2 as f64 / scale) as usize;
                 if cells.is_alive(fx, fy) {
+                    self.make_alive(x + x2, y + y2);
+                } else {
+                    self.make_dead(x + x2, y + y2);
+                }
+            }
+        }
+    }
+
+    pub fn allocate_prime(&mut self, prime: Prime, x: usize, y: usize) {
+        for x2 in 0..prime.exclusive_size {
+            for y2 in 0..prime.exclusive_size {
+                if prime.prime[x2][y2] > 0 {
                     self.make_alive(x + x2, y + y2);
                 } else {
                     self.make_dead(x + x2, y + y2);
@@ -172,6 +213,22 @@ fn test_make_alive() {
 }
 
 #[test]
+fn test_make_alive_square() {
+    let mut cells = Cells::new(5, 5);
+    cells.make_alive_square(2, 3, 2);
+
+    let expected = Cells::from_vec(vec![
+        vec![0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0],
+        vec![0, 0, 1, 1, 0],
+        vec![0, 0, 1, 1, 0],
+    ]);
+
+    assert_eq!(expected, cells);
+}
+
+#[test]
 fn test_make_dead() {
     let mut cells = Cells::from_vec(vec![vec![1, 1], vec![1, 1]]);
     cells.make_dead(1, 0);
@@ -193,6 +250,35 @@ fn test_is_alive() {
 }
 
 #[test]
+fn test_clear() {
+    let mut cells = Cells::from_vec(vec![vec![1, 1], vec![1, 1]]);
+    cells.clear();
+
+    let expected = Cells::new(2, 2);
+
+    assert_eq!(expected, cells);
+}
+
+#[test]
+fn test_is_allocatable() {
+    let cells = Cells::from_vec(vec![
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 1, 1, 1, 1, 0, 0],
+        vec![0, 0, 0, 0, 1, 1, 1, 1, 0, 0],
+        vec![0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ]);
+
+    assert!(cells.is_allocatable(1, 2, 2));
+    assert!(!cells.is_allocatable(3, 3, 2));
+}
+
+#[test]
 fn test_allocate() {
     let mut cells = Cells::new(10, 10);
     let font = Cells::from_vec(vec![vec![1, 1], vec![1, 0]]);
@@ -207,6 +293,27 @@ fn test_allocate() {
         vec![0, 0, 0, 0, 1, 1, 1, 1, 0, 0],
         vec![0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
         vec![0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ]);
+
+    assert_eq!(expected, cells);
+}
+
+#[test]
+fn test_allocate_prime() {
+    let mut cells = Cells::new(10, 10);
+
+    cells.allocate_prime(BEACON, 2, 2);
+    let expected = Cells::from_vec(vec![
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
+        vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         vec![0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ]);
