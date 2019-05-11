@@ -1,6 +1,5 @@
 use cells::*;
 use config::*;
-use rand::prelude::*;
 use wasm_bindgen::JsValue;
 use evolve::*;
 
@@ -20,18 +19,6 @@ impl GameOfLife {
             height: height,
             cell_length: config.cell_size as f64,
             cells: Cells::new(size_x, size_y),
-        }
-    }
-
-    pub fn randomize(&mut self) {
-        let mut rng = rand::thread_rng();
-        for x in 0..self.cells.size_x {
-            for y in 0..self.cells.size_y {
-                let r: f64 = rng.gen();
-                if r < 0.3 {
-                    self.cells.make_alive(x, y);
-                }
-            }
         }
     }
 

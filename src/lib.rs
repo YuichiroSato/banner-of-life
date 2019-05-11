@@ -66,10 +66,6 @@ impl Banner {
         (canvas.width() as f64, canvas.height() as f64)
     }
 
-    pub fn initialize(&mut self) {
-        self.game_of_life.randomize();
-    }
-
     pub fn tick(&mut self) {
         self.game_of_life.evolve();
         self.draw();
