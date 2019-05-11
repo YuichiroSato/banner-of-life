@@ -5,6 +5,8 @@ extern crate web_sys;
 
 mod cells;
 mod compound;
+mod config;
+mod evolve;
 mod fonts;
 mod game_of_life;
 mod mold;
@@ -16,6 +18,7 @@ mod utils;
 use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::*;
 use game_of_life::GameOfLife;
+use config::*;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "wee_alloc")] {
@@ -32,15 +35,35 @@ pub struct Banner {
 
 #[wasm_bindgen]
 impl Banner {
-    pub fn new(canvas_id: &str) -> Banner {
+    pub fn default(canvas_id: &str) -> Banner {
+        let config = Config::new();
+        let (width, height) = Banner::get_canvas_size(canvas_id);
         Banner {
             canvas_id: canvas_id.to_string(),
-            game_of_life: GameOfLife::new(100, 30),
+            game_of_life: GameOfLife::new(width, height, config),
         }
     }
 
-    pub fn initialize(&mut self) {
-        self.game_of_life.randomize();
+    pub fn new(canvas_id: &str, config: Config) -> Banner {
+        let (width, height) = Banner::get_canvas_size(canvas_id);
+        Banner {
+            canvas_id: canvas_id.to_string(),
+            game_of_life: GameOfLife::new(width, height, config),
+        }
+    }
+
+    fn get_canvas_size(canvas_id: &str) -> (f64, f64) {
+        let canvas = web_sys::window()
+            .unwrap()
+            .document()
+            .unwrap()
+            .get_element_by_id(&canvas_id)
+            .unwrap()
+            .dyn_into::<web_sys::HtmlCanvasElement>()
+            .map_err(|_| ())
+            .unwrap();
+
+        (canvas.width() as f64, canvas.height() as f64)
     }
 
     pub fn tick(&mut self) {
