@@ -1,25 +1,25 @@
 use cells::*;
+use config::*;
 use rand::prelude::*;
 use wasm_bindgen::JsValue;
+use evolve::*;
 
 pub struct GameOfLife {
     width: f64,
     height: f64,
-    origin_x: f64,
-    origin_y: f64,
     cell_length: f64,
-    cells: CellsImpl,
+    cells: Cells,
 }
 
 impl GameOfLife {
-    pub fn new(size_x: usize, size_y: usize) -> GameOfLife {
+    pub fn new(width: f64, height: f64, config: Config) -> GameOfLife {
+        let size_x = (width as f64 / config.cell_size as f64) as usize;
+        let size_y = (height as f64 / config.cell_size as f64) as usize;
         GameOfLife {
-            width: 1000.0,
-            height: 500.0,
-            origin_x: 20.0,
-            origin_y: 20.0,
-            cell_length: 10.0,
-            cells: CellsImpl::new(size_x, size_y),
+            width: width,
+            height: height,
+            cell_length: config.cell_size as f64,
+            cells: Cells::new(size_x, size_y),
         }
     }
 
@@ -36,18 +36,7 @@ impl GameOfLife {
     }
 
     pub fn evolve(&mut self) {
-        let mut new_cells = self.cells.replicate();
-
-        for x in 0..self.cells.size_x {
-            for y in 0..self.cells.size_y {
-                let c = self.cells.count_alive_around(x, y);
-                if self.cells.is_alive(x, y) && c == 2 || c == 3 {
-                    new_cells.make_alive(x, y);
-                }
-            }
-        }
-
-        self.cells = new_cells;
+        self.cells = next(&self.cells);
     }
 
     pub fn draw(&self, context: &web_sys::CanvasRenderingContext2d) {
@@ -64,18 +53,18 @@ impl GameOfLife {
     }
 
     fn draw_grid(&self, context: &web_sys::CanvasRenderingContext2d) {
-        let to_x = self.origin_x + self.cell_length * self.cells.size_x as f64;
-        let to_y = self.origin_y + self.cell_length * self.cells.size_y as f64;
+        let to_x = self.cell_length * self.cells.size_x as f64;
+        let to_y = self.cell_length * self.cells.size_y as f64;
 
         for x in 0..(self.cells.size_x + 1) {
-            let from_x = self.origin_x + self.cell_length * x as f64;
-            context.move_to(from_x, self.origin_y);
+            let from_x = self.cell_length * x as f64;
+            context.move_to(from_x, 0.0);
             context.line_to(from_x, to_y);
         }
 
         for y in 0..(self.cells.size_y + 1) {
-            let from_y = self.origin_y + self.cell_length * y as f64;
-            context.move_to(self.origin_x, from_y);
+            let from_y = self.cell_length * y as f64;
+            context.move_to(0.0, from_y);
             context.line_to(to_x, from_y);
         }
     }
@@ -84,8 +73,8 @@ impl GameOfLife {
         for x in 0..(self.cells.size_x) {
            for y in 0..(self.cells.size_y) {
                if self.cells.is_alive(x, y) {
-                   let upper_x = self.origin_x + self.cell_length * x as f64;
-                   let upper_y = self.origin_y + self.cell_length * y as f64;
+                   let upper_x = self.cell_length * x as f64;
+                   let upper_y = self.cell_length * y as f64;
                    context.fill_rect(upper_x, upper_y, self.cell_length, self.cell_length);
                }
            }
