@@ -67,6 +67,11 @@ impl Banner {
         self.game_of_life =  GameOfLife::new(width, height, cell_size);
     }
 
+    #[wasm_bindgen(js_name = setFontSize)]
+    pub fn set_font_size(&mut self, font_size: usize) {
+        self.config.font_size = font_size;
+    }
+
     #[wasm_bindgen(js_name = setBackgroundColor)]
     pub fn set_background_color(&mut self, background_color: &str) {
         self.config.background_color = background_color.to_string();
