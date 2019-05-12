@@ -11,13 +11,13 @@ pub struct GameOfLife {
 }
 
 impl GameOfLife {
-    pub fn new(width: f64, height: f64, config: Config) -> GameOfLife {
-        let size_x = (width as f64 / config.cell_size as f64) as usize;
-        let size_y = (height as f64 / config.cell_size as f64) as usize;
+    pub fn new(width: f64, height: f64, cell_size: usize) -> GameOfLife {
+        let size_x = (width as f64 / cell_size as f64) as usize;
+        let size_y = (height as f64 / cell_size as f64) as usize;
         GameOfLife {
             width: width,
             height: height,
-            cell_length: config.cell_size as f64,
+            cell_length: cell_size as f64,
             cells: Cells::new(size_x, size_y),
         }
     }

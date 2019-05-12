@@ -31,24 +31,18 @@ cfg_if::cfg_if! {
 pub struct Banner {
     canvas_id: String,
     game_of_life: GameOfLife,
+    config: Config,
 }
 
 #[wasm_bindgen]
 impl Banner {
-    pub fn default(canvas_id: &str) -> Banner {
+    pub fn new(canvas_id: &str) -> Banner {
         let config = Config::new();
         let (width, height) = Banner::get_canvas_size(canvas_id);
         Banner {
             canvas_id: canvas_id.to_string(),
-            game_of_life: GameOfLife::new(width, height, config),
-        }
-    }
-
-    pub fn new(canvas_id: &str, config: Config) -> Banner {
-        let (width, height) = Banner::get_canvas_size(canvas_id);
-        Banner {
-            canvas_id: canvas_id.to_string(),
-            game_of_life: GameOfLife::new(width, height, config),
+            game_of_life: GameOfLife::new(width, height, config.cell_size),
+            config: config,
         }
     }
 
@@ -64,6 +58,13 @@ impl Banner {
             .unwrap();
 
         (canvas.width() as f64, canvas.height() as f64)
+    }
+
+    #[wasm_bindgen(js_name = setCellSize)]
+    pub fn set_cell_size(&mut self, cell_size: usize) {
+        self.config.cell_size = cell_size;
+        let (width, height) = Banner::get_canvas_size(self.canvas_id.as_str());
+        self.game_of_life =  GameOfLife::new(width, height, cell_size);
     }
 
     pub fn tick(&mut self) {
