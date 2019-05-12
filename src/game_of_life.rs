@@ -26,6 +26,10 @@ impl GameOfLife {
         self.cells = next(&self.cells);
     }
 
+    pub fn allocate(&mut self, cells: Cells, x: usize, y: usize) {
+        self.cells.allocate(cells, x, y, 1.0);
+    }
+
     pub fn draw(&self, context: &web_sys::CanvasRenderingContext2d, config: &Config) {
         context.set_fill_style(&JsValue::from_str(config.background_color.as_str()));
         context.fill_rect(0.0, 0.0, self.width, self.height);
