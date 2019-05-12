@@ -67,6 +67,21 @@ impl Banner {
         self.game_of_life =  GameOfLife::new(width, height, cell_size);
     }
 
+    #[wasm_bindgen(js_name = setBackgroundColor)]
+    pub fn set_background_color(&mut self, background_color: &str) {
+        self.config.background_color = background_color.to_string();
+    }
+
+    #[wasm_bindgen(js_name = setCellColor)]
+    pub fn set_cell_color(&mut self, cell_color: &str) {
+        self.config.cell_color = cell_color.to_string();
+    }
+
+    #[wasm_bindgen(js_name = setGridColor)]
+    pub fn set_grid_color(&mut self, grid_color: &str) {
+        self.config.grid_color = grid_color.to_string();
+    }
+
     pub fn tick(&mut self) {
         self.game_of_life.evolve();
         self.draw();
@@ -88,6 +103,6 @@ impl Banner {
             .dyn_into::<web_sys::CanvasRenderingContext2d>()
             .unwrap();
 
-        self.game_of_life.draw(&context);
+        self.game_of_life.draw(&context, &self.config);
     }
 }
