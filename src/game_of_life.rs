@@ -11,13 +11,13 @@ pub struct GameOfLife {
 }
 
 impl GameOfLife {
-    pub fn new(width: f64, height: f64, config: Config) -> GameOfLife {
-        let size_x = (width as f64 / config.cell_size as f64) as usize;
-        let size_y = (height as f64 / config.cell_size as f64) as usize;
+    pub fn new(width: f64, height: f64, cell_size: usize) -> GameOfLife {
+        let size_x = (width as f64 / cell_size as f64) as usize;
+        let size_y = (height as f64 / cell_size as f64) as usize;
         GameOfLife {
             width: width,
             height: height,
-            cell_length: config.cell_size as f64,
+            cell_length: cell_size as f64,
             cells: Cells::new(size_x, size_y),
         }
     }
@@ -26,16 +26,17 @@ impl GameOfLife {
         self.cells = next(&self.cells);
     }
 
-    pub fn draw(&self, context: &web_sys::CanvasRenderingContext2d) {
-        context.set_fill_style(&JsValue::from_str("white"));
+    pub fn draw(&self, context: &web_sys::CanvasRenderingContext2d, config: &Config) {
+        context.set_fill_style(&JsValue::from_str(config.background_color.as_str()));
         context.fill_rect(0.0, 0.0, self.width, self.height);
 
-        context.set_fill_style(&JsValue::from_str("black"));
+        context.set_stroke_style(&JsValue::from_str(config.grid_color.as_str()));
 
         context.begin_path();
         self.draw_grid(&context);
         context.stroke();
 
+        context.set_fill_style(&JsValue::from_str(config.cell_color.as_str()));
         self.draw_cells(&context);
     }
 
