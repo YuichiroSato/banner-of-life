@@ -57,7 +57,7 @@ impl<T: Randomizer> GradientDescent<T> {
     fn add_primes(&mut self, mold: &Mold, pattern: &mut Compound, occupied: &mut Cells) {
         for x in 0..mold.font_size {
             for y in 0..mold.font_size {
-                if !mold.target.is_allocatable(x, y, 4) && self.randomizer.random_number() < 0.05 {
+                if !mold.target.is_allocatable(x, y, 2) && self.randomizer.random_number() < 0.05 {
                     let p = self.get_random_prime();
                     if occupied.is_allocatable(x, y, p.exclusive_size) {
                         pattern.set(p, x, y);

@@ -19,6 +19,9 @@ use wasm_bindgen::JsCast;
 use wasm_bindgen::prelude::*;
 use game_of_life::GameOfLife;
 use config::*;
+use mold::*;
+use optimizer::*;
+use randomizer::*;
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "wee_alloc")] {
@@ -67,6 +70,11 @@ impl Banner {
         self.game_of_life =  GameOfLife::new(width, height, cell_size);
     }
 
+    #[wasm_bindgen(js_name = setFontSize)]
+    pub fn set_font_size(&mut self, font_size: usize) {
+        self.config.font_size = font_size;
+    }
+
     #[wasm_bindgen(js_name = setBackgroundColor)]
     pub fn set_background_color(&mut self, background_color: &str) {
         self.config.background_color = background_color.to_string();
@@ -80,6 +88,23 @@ impl Banner {
     #[wasm_bindgen(js_name = setGridColor)]
     pub fn set_grid_color(&mut self, grid_color: &str) {
         self.config.grid_color = grid_color.to_string();
+    }
+
+    pub fn render(&mut self, text: &str) {
+       let rand = Rand::new();
+       let mut optimizer = GradientDescent {
+            randomizer: rand,
+            n: 5,
+        };
+        let cs: Vec<char> = text.chars().collect();
+        let mut i = 0;
+        for c in cs {
+            let mold = Mold::from_char(c, self.config.font_size);
+            let pattern = optimizer.optimize(mold);
+            let cells = pattern.to_cells();
+            self.game_of_life.allocate(cells, 5 + i * self.config.font_size, 5);
+            i += 1;
+        }
     }
 
     pub fn tick(&mut self) {
