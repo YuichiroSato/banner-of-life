@@ -1,6 +1,6 @@
 [package]
 name = "banner-of-life"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["YuichiroSato <sato.yu1ro@gmail.com>"]
 description = "Game of life to display arbitrary strings"
 repository = "https://github.com/YuichiroSato/banner-of-life"

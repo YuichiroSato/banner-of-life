@@ -26,6 +26,10 @@ impl GameOfLife {
         self.cells = next(&self.cells);
     }
 
+    pub fn clear(&mut self) {
+        self.cells.clear();
+    }
+
     pub fn allocate(&mut self, cells: Cells, x: usize, y: usize) {
         self.cells.allocate(cells, x, y, 1.0);
     }
