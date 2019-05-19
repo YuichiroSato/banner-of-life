@@ -102,6 +102,7 @@ impl Banner {
             let mold = Mold::from_char(c, self.config.font_size);
             let pattern = optimizer.optimize(mold);
             let cells = pattern.to_cells();
+            self.game_of_life.clear();
             self.game_of_life.allocate(cells, 5 + i * self.config.font_size, 5);
             i += 1;
         }
