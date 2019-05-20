@@ -4,6 +4,7 @@ pub struct Config {
     pub background_color: String,
     pub cell_color: String,
     pub grid_color: String,
+    pub mold_color: String,
 }
 
 impl Config {
@@ -14,6 +15,7 @@ impl Config {
             background_color: "white".to_string(),
             cell_color: "black".to_string(),
             grid_color: "black".to_string(),
+            mold_color: "black".to_string(),
         }
     }
 }

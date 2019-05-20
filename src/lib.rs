@@ -85,6 +85,11 @@ impl Banner {
         self.config.cell_color = cell_color.to_string();
     }
 
+    #[wasm_bindgen(js_name = setMoldColor)]
+    pub fn set_mold_color(&mut self, mold_color: &str) {
+        self.config.mold_color = mold_color.to_string();
+    }
+
     #[wasm_bindgen(js_name = setGridColor)]
     pub fn set_grid_color(&mut self, grid_color: &str) {
         self.config.grid_color = grid_color.to_string();
@@ -100,10 +105,11 @@ impl Banner {
         let mut i = 0;
         for c in cs {
             let mold = Mold::from_char(c, self.config.font_size);
-            let pattern = optimizer.optimize(mold);
+            let pattern = optimizer.optimize(&mold);
             let cells = pattern.to_cells();
             self.game_of_life.clear();
             self.game_of_life.allocate(cells, 5 + i * self.config.font_size, 5);
+            self.game_of_life.allocate_molds(mold.target, 5 + i * self.config.font_size, 5);
             i += 1;
         }
     }
