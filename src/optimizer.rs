@@ -5,7 +5,7 @@ use primes::*;
 use randomizer::*;
 
 pub trait Optimizer {
-    fn optimize(&mut self, mold: Mold) -> Compound;
+    fn optimize(&mut self, mold: &Mold) -> Compound;
 }
 
 pub struct GradientDescent<T: Randomizer> {
@@ -14,7 +14,7 @@ pub struct GradientDescent<T: Randomizer> {
 }
 
 impl<T: Randomizer> Optimizer for GradientDescent<T> {
-    fn optimize(&mut self, mold: Mold) -> Compound {
+    fn optimize(&mut self, mold: &Mold) -> Compound {
         let mut pattern = Compound::new(mold.font_size);
         let mut occupied = Cells::new(mold.font_size, mold.font_size);
         let mut score;

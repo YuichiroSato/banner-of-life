@@ -8,6 +8,7 @@ pub struct GameOfLife {
     height: f64,
     cell_length: f64,
     cells: Cells,
+    molds: Cells,
 }
 
 impl GameOfLife {
@@ -19,6 +20,7 @@ impl GameOfLife {
             height: height,
             cell_length: cell_size as f64,
             cells: Cells::new(size_x, size_y),
+            molds: Cells::new(size_x, size_y),
         }
     }
 
@@ -34,7 +36,11 @@ impl GameOfLife {
         self.cells.allocate(cells, x, y, 1.0);
     }
 
-    pub fn draw(&self, context: &web_sys::CanvasRenderingContext2d, config: &Config) {
+    pub fn allocate_molds(&mut self, molds: Cells, x: usize, y: usize) {
+        self.molds.allocate(molds, x, y, 1.0);
+    }
+
+   pub fn draw(&self, context: &web_sys::CanvasRenderingContext2d, config: &Config) {
         context.set_fill_style(&JsValue::from_str(config.background_color.as_str()));
         context.fill_rect(0.0, 0.0, self.width, self.height);
 
@@ -42,6 +48,12 @@ impl GameOfLife {
 
         context.begin_path();
         self.draw_grid(&context);
+        context.stroke();
+
+        context.begin_path();
+        context.set_stroke_style(&JsValue::from_str(config.mold_color.as_str()));
+        context.set_line_width(3.0);
+        self.draw_molds(&context);
         context.stroke();
 
         context.set_fill_style(&JsValue::from_str(config.cell_color.as_str()));
@@ -62,6 +74,18 @@ impl GameOfLife {
             let from_y = self.cell_length * y as f64;
             context.move_to(0.0, from_y);
             context.line_to(to_x, from_y);
+        }
+    }
+
+    pub fn draw_molds(&self, context : &web_sys::CanvasRenderingContext2d) {
+        for x in 0..(self.molds.size_x) {
+           for y in 0..(self.molds.size_y) {
+               if self.molds.is_alive(x, y) {
+                   let upper_x = self.cell_length * x as f64;
+                   let upper_y = self.cell_length * y as f64;
+                   context.rect(upper_x, upper_y, self.cell_length, self.cell_length);
+               }
+           }
         }
     }
 
