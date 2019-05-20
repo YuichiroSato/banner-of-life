@@ -1,0 +1,16 @@
+{
+  "name": "banner-of-life-sample",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "banner-of-life": "^0.1.1",
+    "copy-webpack-plugin": "^5.0.0",
+    "webpack": "^4.31.0",
+    "webpack-cli": "^3.3.2",
+    "webpack-dev-server": "^3.4.1"
+  }
+}
